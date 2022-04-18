@@ -1,17 +1,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
- 
-/* Check if the compiler thinks you are targeting the wrong operating system. */
-#if defined(__linux__)
-#error "You are not using a cross-compiler, you will most certainly run into trouble"
-#endif
- 
-/* This tutorial will only work for the 32-bit ix86 targets. */
-#if !defined(__i386__)
-#error "This tutorial needs to be compiled with a ix86-elf compiler"
-#endif
- 
+
+#include "types.h"
+
 /* Hardware text mode color constants. */
 enum vga_color {
 	VGA_COLOR_BLACK         = 0,
@@ -104,11 +96,8 @@ void terminal_writestring(const char* data)
 	terminal_write(data, strlen(data));
 }
  
-void kernel_main(void) 
+extern "C" void kernel_main(const void* multiboot_structure, uint32_t) 
 {
-	/* Initialize terminal interface */
 	terminal_initialize();
- 
-	/* Newline support is left as an exercise. */
 	terminal_writestring("Hello, kernel World!\n");
 }

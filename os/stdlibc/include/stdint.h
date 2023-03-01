@@ -1,14 +1,10 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
-/* 
-- Integer type defintions for signed
-  and unsigned integers.
-*/
-
 typedef char                   int8_t;
 typedef short                  int16_t;
 typedef int                    int32_t;
+typedef unsigned int           size_t;
 typedef long long int          int64_t;
 
 typedef unsigned char          uint8_t;

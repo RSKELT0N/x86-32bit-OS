@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if grub-file --is-x86-multiboot myos.bin;
+if grub-file --is-x86-multiboot os/os.elf;
 then
       echo "multiboot confirmed";
 else

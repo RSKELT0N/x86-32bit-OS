@@ -1,9 +1,9 @@
-use32               ; Tell the compiler to use 32 bit (Protected mode).
+use32                       ; Tell the compiler to use 32 bit (Protected mode).
 
 section .text
 
-extern _gdt_table   ; Address of the GDT table.
-extern _idt_table   ; Address of the IDT table
+extern _gdt_table           ; Address of the GDT table.
+extern _idt_table           ; Address of the IDT table
 
 [global _load_GDT]
 _load_GDT:

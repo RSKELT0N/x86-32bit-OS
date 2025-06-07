@@ -7,7 +7,6 @@
 =====================================================================
 */
 
-
 /*
 - (ENTRY(_start)): This indicates the entry point of our OS, which
 will jump to '_start' in 'loader.asm', once the image is

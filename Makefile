@@ -17,6 +17,7 @@
 
 OS_DIR      := ./os
 ISO_DIR     := ./iso
+CROSS_C_DIR := ./cross-compiler
 BUILD_DIR   := ./build
 KERNEL_DIR  := ./kernel
 STDLIBC_DIR := ./stdlibc
@@ -25,7 +26,7 @@ TARGET      := os.elf
 IMAGE       := os.iso
 LINKER      := $(OS_DIR)/linker.ld
 
-GPPFLAGS := -m32                \
+GPPFLAGS :=                \
 	-nostdlib                   \
 	-nostdinc                   \
 	-fno-leading-underscore     \
@@ -57,9 +58,12 @@ AS_OBJ_RULE  = $(patsubst %.asm, %.o, $(ASM))                                   
 # Compiles all source files,
 # links and generated image file.
 ####################################
-all: setup install
+all: build-cross-compiler setup install
 
-setup:
+build-cross-compiler:
+	./scripts/build-cross-compiler.sh
+
+setup: build-cross-compiler
 	mkdir $(BIN_DIR)
 
 # Updates binary file to /boot and places image file to os directory.
@@ -72,7 +76,7 @@ install: $(IMAGE)
 
 # Compiles .cpp files with set flags.
 %.o: %.cpp
-	g++ $(GPPFLAGS) -o $@ $<
+	gcc-ar-15 $(GPPFLAGS) -o $@ $<
 	mv $@ $(BIN_DIR)
 
 # Compiles .asm files with set flags.
@@ -117,6 +121,7 @@ run-vm:
 clean:
 	rm -rf $(BIN_DIR) || true
 	rm -rf $(BUILD_DIR)  || true
+	rm -rf $(CROSS_C_DIR) || true
 #########################
 # rebuild
 #########################

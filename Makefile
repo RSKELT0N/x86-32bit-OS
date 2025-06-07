@@ -25,8 +25,14 @@ BIN_DIR     := ./bin
 TARGET      := os.elf
 IMAGE       := os.iso
 LINKER      := $(OS_DIR)/linker.ld
+CXX         := i686-elf-g++
+LD          := i686-elf-ld
+LD_FLAGS    := -melf_i386
+NASM_FLAGS  = -f elf32
+ELTORITO    = stage2_eltorito
+MENU_CONFIG = menu.lst
 
-GPPFLAGS :=                \
+CXXFLAGS := -m32               \
 	-nostdlib                   \
 	-nostdinc                   \
 	-fno-leading-underscore     \
@@ -43,10 +49,6 @@ GPPFLAGS :=                \
 	-I$(OS_DIR)                 \
 	-c
 
-LD_FLAGS   := -melf_i386
-NASM_FLAGS  = -f elf32
-ELTORITO    = stage2_eltorito
-MENU_CONFIG = menu.lst
 
 CPP          = $(shell find $(OS_DIR)/$(KERNEL_DIR) $(OS_DIR)/$(STDLIBC_DIR) -name "*.cpp")  # Retrieves all .cpp files from $(SRC_DIR)
 ASM          = $(shell find $(OS_DIR)/$(KERNEL_DIR) $(OS_DIR)/$(STDLIBC_DIR) -name "*.asm")  # Retrieves all .asm files from $(SRC_DIR)
@@ -58,25 +60,24 @@ AS_OBJ_RULE  = $(patsubst %.asm, %.o, $(ASM))                                   
 # Compiles all source files,
 # links and generated image file.
 ####################################
-all: build-cross-compiler setup install
+all: setup install
 
 build-cross-compiler:
 	./scripts/build-cross-compiler.sh
 
-setup: build-cross-compiler
+setup:
 	mkdir $(BIN_DIR)
 
 # Updates binary file to /boot and places image file to os directory.
 install: $(IMAGE)
 	mkdir $(BUILD_DIR)
-	sudo cp $(ISO_DIR)/boot/$(TARGET) /boot/$(TARGET)
 	mv $(ISO_DIR)/boot/$(TARGET) $(BUILD_DIR)
 	mv $(IMAGE) $(BUILD_DIR)
 	rm -rf $(ISO_DIR)
 
 # Compiles .cpp files with set flags.
 %.o: %.cpp
-	gcc-ar-15 $(GPPFLAGS) -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 	mv $@ $(BIN_DIR)
 
 # Compiles .asm files with set flags.
@@ -86,7 +87,7 @@ install: $(IMAGE)
 
 # Links all .o files together into executable binary.
 $(TARGET): $(CPP_OBJ_RULE) $(AS_OBJ_RULE)
-	ld $(LD_FLAGS) -T $(LINKER) -o $@ $(BIN_DIR)/*.o
+	$(LD) $(LD_FLAGS) -T $(LINKER) -o $@ $(BIN_DIR)/*.o
 
 # Generates iso grub configuration folder for creating image. To be booted by qemu.
 $(IMAGE): $(TARGET)
@@ -94,7 +95,7 @@ $(IMAGE): $(TARGET)
 	mv ./$< $(ISO_DIR)/boot/
 	cp templates/$(ELTORITO) $(ISO_DIR)/boot/grub/
 	cp templates/$(MENU_CONFIG) $(ISO_DIR)/boot/grub/
-	genisoimage -R                  \
+	mkisofs -R                      \
 	-b boot/grub/$(ELTORITO)        \
 	-no-emul-boot                   \
 	-boot-load-size 4               \

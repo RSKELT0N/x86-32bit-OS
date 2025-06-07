@@ -48,6 +48,9 @@ cd ../gcc-13.2.0
 mkdir ../build-gcc
 cd ../build-gcc
 
+CFLAGS="-Utoupper -Utolower -Uisspace -Uisprint -Uiscntrl -Uisupper -Uislower"
+CXXFLAGS="-Utoupper -Utolower -Uisspace -Uisprint -Uiscntrl -Uisupper -Uislower"
+
 ../gcc-13.2.0/configure                \
     --target=$TARGET                   \
     --prefix=$PREFIX                   \

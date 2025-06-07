@@ -71,9 +71,8 @@ setup:
 # Updates binary file to /boot and places image file to os directory.
 install: $(IMAGE)
 	mkdir $(BUILD_DIR)
-	mv $(ISO_DIR)/boot/$(TARGET) $(BUILD_DIR)
+	cp $(ISO_DIR)/boot/$(TARGET) $(BUILD_DIR)
 	mv $(IMAGE) $(BUILD_DIR)
-	rm -rf $(ISO_DIR)
 
 # Compiles .cpp files with set flags.
 %.o: %.cpp
@@ -102,7 +101,7 @@ $(IMAGE): $(TARGET)
 	-input-charset utf8             \
 	-boot-info-table                \
 	-o $(IMAGE)                     \
-	iso
+	$(ISO_DIR)
 
 # Launches qemu and loads image as boot medium to be loaded by grub to start entry within kernel.
 run: run-qemu
@@ -121,6 +120,7 @@ run-vm:
 #########################
 clean:
 	rm -rf $(BIN_DIR) || true
+	rm -rf $(BUILD_DIR)  || true
 	rm -rf $(BUILD_DIR)  || true
 	rm -rf $(CROSS_C_DIR) || true
 #########################
